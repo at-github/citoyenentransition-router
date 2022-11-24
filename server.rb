@@ -17,7 +17,7 @@ class Server
 
     @socket.print "HTTP/1.1 #{http_code} \
                  #{http_status_message.fetch(http_code, 'OK')}\r\n" +
-                 "Content-Type: text/html\r\n" +
+                 "Content-Type: text/html; charset=UTF-8\r\n" +
                  "Content-Length: #{content.size}\r\n" +
                  "Connection: close\r\n"
     @socket.print "\r\n"
