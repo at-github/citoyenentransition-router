@@ -1,3 +1,4 @@
+require 'bundler/setup'
 require 'socket'
 require 'uri'
 require 'cgi'
@@ -52,9 +53,13 @@ loop do
   # Make sure the file exists and is not a directory
   # before attempting to open it.
   if File.exist?(path + '.md'.to_s) && !File.directory?(path)
-    message = "<h1>You requested: #{path}</h1>"
+    path_md = path + '.md'
+    file_md = File.open(path_md)
+    file_data_md = file_md.read
+    message = markdown.render(file_data_md)
+    file_md.close
     myServer.respond(message, 200)
   else
-    myServer.respond('<h1>Not found</h1>', 404)
+    myServer.respond('<h1>Contenu introuvable</h1>', 404)
   end
 end
