@@ -7,7 +7,7 @@ Voici le code source du site, celui-ci est aussi une occasion pour jouer avec `r
 
 ### Démarrer le serveur
 ```shell
-ruby server.rb
+ruby app.rb
 ```
 Par défaut pour l'instant le serveur démarre sur le port `2345` qui est écrit en *dur*, TODO mettre ce port en variable d'environnement.
 
