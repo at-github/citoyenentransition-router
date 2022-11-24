@@ -1,5 +1,6 @@
 require 'socket'
 require 'uri'
+require 'cgi'
 
 # Files will be served from this directory
 WEB_ROOT = './public'
@@ -34,7 +35,7 @@ end
 # by joining it with the WEB_ROOT.
 def requested_file(request_line)
   request_uri  = request_line.split(" ")[1]
-  path         = URI.unescape(URI(request_uri).path)
+  path         = CGI.unescape(URI(request_uri).path)
 
   clean = []
 
