@@ -1,6 +1,8 @@
 require 'socket'
 require 'uri'
 require 'cgi'
+require 'redcarpet'
+
 require_relative 'server'
 
 # Files will be served from this directory
@@ -37,6 +39,7 @@ def requested_file(request)
 end
 
 myServer = Server.new
+markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
 
 # loop infinitely, processing one incoming
 # connection at a time.
