@@ -5,25 +5,6 @@ require 'cgi'
 # Files will be served from this directory
 WEB_ROOT = './public'
 
-# Map extensions to their content type
-CONTENT_TYPE_MAPPING = {
-  'markdown' => 'text/markdown',
-  'html' => 'text/html',
-  'txt' => 'text/plain',
-  'png' => 'image/png',
-  'jpg' => 'image/jpeg'
-}
-
-# Treat as binary data if content type cannot be found
-DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-
-# This helper function parses the extension of the
-# requested file and then looks up its content type.
-def content_type(path)
-  ext = File.extname(path).split(".").last
-  CONTENT_TYPE_MAPPING.fetch(ext, DEFAULT_CONTENT_TYPE)
-end
-
 # This helper function parses the Request-Line and
 # generates a path to a file on the server.
 # Takes a request line (e.g. "GET /path?foo=bar HTTP/1.1")
@@ -71,14 +52,14 @@ loop do
   request_line = socket.gets
 
   path = requested_file(request_line)
-  + path = File.join(path, 'index.txt') if File.directory?(path)
+  path = File.join(path, 'index') if File.directory?(path)
 
   # Make sure the file exists and is not a directory
   # before attempting to open it.
   if File.exist?(path.to_s) && !File.directory?(path)
     File.open(path, "rb") do |file|
       socket.print "HTTP/1.1 200 OK\r\n" +
-                   "Content-Type: #{content_type(file)}\r\n" +
+                   "Content-Type: text/html\r\n" +
                    "Content-Length: #{file.size}\r\n" +
                    "Connection: close\r\n"
 
@@ -92,7 +73,7 @@ loop do
 
     # respond with a 404 error code to indicate the file does not exist
     socket.print "HTTP/1.1 404 Not Found\r\n" +
-                 "Content-Type: text/plain\r\n" +
+                 "Content-Type: text/html\r\n" +
                  "Content-Length: #{message.size}\r\n" +
                  "Connection: close\r\n"
 
