@@ -46,15 +46,19 @@ loop do
   # I/O objects. (In fact, TCPSocket is a subclass of IO.)
   path = requested_file(myServer.request())
 
-  if (path.match? 'favicon.ico') || (/^\/public.*/.match?(path) == true)
+  if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
     if !File.exist?('.' + path)
       myServer.respond_404()
       next
     end
 
+    content_type = 'text/html'
+    content_type = 'text/css' if /^\/public\/css.*$/.match?(path)
+    content_type = 'application/javascript' if /^\/public\/js.*$/.match?(path)
+
     file = File.open('.' + path)
     file_data = file.read
-    myServer.respond(file_data, 200)
+    myServer.respond(file_data, 200, content_type)
   else
     uri      = URI(base_url + path + '.md')
     response = Net::HTTP.get_response(uri)
