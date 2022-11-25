@@ -23,7 +23,6 @@ class Server
     @socket.print "\r\n"
 
     @socket.print content
-    STDOUT.puts 'socket will close'
     @socket.close
   end
 end

@@ -3,11 +3,9 @@ require 'socket'
 require 'uri'
 require 'cgi'
 require 'redcarpet'
+require 'net/http'
 
 require_relative 'server'
-
-# Files will be served from this directory
-WEB_ROOT = './public'
 
 # This helper function parses the Request-Line and
 # generates a path to a file on the server.
@@ -16,8 +14,7 @@ WEB_ROOT = './public'
 # and unescaping URI-encoding.
 #
 # This cleaned up path (e.g. "/path") is then converted into
-# a relative path to a file in the server's public folder
-# by joining it with the WEB_ROOT.
+# a relative path to a file in the server's
 def requested_file(request)
   clean = []
 
@@ -31,9 +28,6 @@ def requested_file(request)
     # remove the last clean component.
     # Otherwise, add the component to the Array of clean components
     part == '..' ? clean.pop : clean << part
-
-    # return the web root joined to the clean path
-    File.join(WEB_ROOT, *clean)
   end
 
   File.join(WEB_ROOT, path)
@@ -41,6 +35,8 @@ end
 
 myServer = Server.new
 markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
+
+STDOUT.puts 'Server started'
 
 # loop infinitely, processing one incoming
 # connection at a time.
@@ -50,16 +46,20 @@ loop do
   # I/O objects. (In fact, TCPSocket is a subclass of IO.)
   path = requested_file(myServer.request())
 
-  # Make sure the file exists and is not a directory
-  # before attempting to open it.
-  if File.exist?(path + '.md'.to_s) && !File.directory?(path)
-    path_md = path + '.md'
-    file_md = File.open(path_md)
-    file_data_md = file_md.read
-    message = markdown.render(file_data_md)
-    file_md.close
-    myServer.respond(message, 200)
+  if path.match? 'favicon.ico'
+    file = File.open('.' + path)
+    file_data = file.read
+    myServer.respond(file_data, 200)
   else
-    myServer.respond('<h1>Contenu introuvable</h1>', 404)
+    uri      = URI(base_url + path + '.md')
+    response = Net::HTTP.get_response(uri)
+
+    if response.code.to_i < 400
+      message = markdown.render(response.body)
+      myServer.respond(message, response.code)
+    else
+      message = markdown.render('# Contenu introuvable')
+      myServer.respond(message, response.code)
+    end
   end
 end
