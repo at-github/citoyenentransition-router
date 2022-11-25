@@ -48,13 +48,13 @@ loop do
 
   if (path.match? 'favicon.ico') || (/^\/public.*/.match?(path) == true)
     if !File.exist?('.' + path)
-      myServer.respond('<h1>Contenu introuvable</h1>', 404)
-    else
-      file = File.open('.' + path)
-      file_data = file.read
-      myServer.respond(file_data, 200)
+      myServer.respond_404()
+      next
     end
 
+    file = File.open('.' + path)
+    file_data = file.read
+    myServer.respond(file_data, 200)
   else
     uri      = URI(base_url + path + '.md')
     response = Net::HTTP.get_response(uri)
@@ -63,8 +63,7 @@ loop do
       message = markdown.render(response.body)
       myServer.respond(message, response.code)
     else
-      message = markdown.render('# Contenu introuvable')
-      myServer.respond(message, response.code)
+      myServer.respond_404()
     end
   end
 end
