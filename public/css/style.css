@@ -8,6 +8,18 @@ h1, h2, h3, h4, h5 {
   font-family: sans-serif;
 }
 
+a {
+  text-decoration: none;
+  border-bottom: 2px solid gray;
+  transition: background-color 250ms ease-in-out;
+}
+
+a:hover {
+  background-color: #DDD;
+  color: #000;
+  border-bottom: 1px solid gray;
+}
+
 .container {
   padding: 20px;
 }
