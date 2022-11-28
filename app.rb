@@ -1,9 +1,5 @@
 require 'bundler/setup'
-require 'socket'
-require 'uri'
-require 'cgi'
 require 'redcarpet'
-require 'net/http'
 require 'erb'
 require "yaml"
 
@@ -37,7 +33,6 @@ end
 
 myServer = Server.new
 markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
-base_url = YAML.load_file('config.yml')['base_url']
 
 STDOUT.puts 'Server started'
 
@@ -49,6 +44,7 @@ loop do
   # I/O objects. (In fact, TCPSocket is a subclass of IO.)
   path = requested_file(myServer.request())
 
+  # Statics
   if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
     if !File.exist?('.' + path)
       myServer.respond_404()
@@ -63,16 +59,20 @@ loop do
     file_data = file.read
     myServer.respond(file_data, 200, content_type)
   else
-    uri      = URI(base_url + path + '.md')
-    response = Net::HTTP.get_response(uri)
+    content_folder = YAML.load_file('config.yml')['content_folder']
+    md_path_file = "content/#{content_folder}#{path}.md"
 
-    if response.code.to_i < 400
-      @content = markdown.render(response.body)
-      template = ERB.new(File.read('layout.erb'))
-      output = template.result_with_hash(content: @content)
-      myServer.respond(output, response.code)
-    else
+    if !File.exist?(md_path_file)
       myServer.respond_404()
+      next
     end
+
+    md_file = File.open(md_path_file)
+    response = md_file.read
+
+    @content = markdown.render(response)
+    template = ERB.new(File.read('layout.erb'))
+    output = template.result_with_hash(content: @content)
+    myServer.respond(output, 200)
   end
 end
