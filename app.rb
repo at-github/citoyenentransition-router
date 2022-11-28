@@ -4,6 +4,7 @@ require 'uri'
 require 'cgi'
 require 'redcarpet'
 require 'net/http'
+require 'erb'
 
 require_relative 'server'
 
@@ -64,8 +65,10 @@ loop do
     response = Net::HTTP.get_response(uri)
 
     if response.code.to_i < 400
-      message = markdown.render(response.body)
-      myServer.respond(message, response.code)
+      @content = markdown.render(response.body)
+      template = ERB.new(File.read('layout.erb'))
+      output = template.result_with_hash(content: @content)
+      myServer.respond(output, response.code)
     else
       myServer.respond_404()
     end
