@@ -5,6 +5,7 @@ require 'cgi'
 require 'redcarpet'
 require 'net/http'
 require 'erb'
+require "yaml"
 
 require_relative 'server'
 
@@ -36,6 +37,7 @@ end
 
 myServer = Server.new
 markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
+base_url = YAML.load_file('config.yml')['base_url']
 
 STDOUT.puts 'Server started'
 
