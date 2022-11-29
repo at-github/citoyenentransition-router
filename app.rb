@@ -34,9 +34,24 @@ end
 
 myServer = Server.new
 markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
-markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle, extensions = {})
+content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
+layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
 STDOUT.puts 'Server started'
+
+def list_titles_from_directory(folder_path)
+  markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle, extensions = {})
+  content = ''
+  list_md = Dir["#{folder_path}/*.md"]
+
+  list_md.each do |md|
+    md_file   = File.open(md)
+    response  = md_file.read
+    content +=  markdownTitle.render(response)
+  end
+
+  content
+end
 
 # loop infinitely, processing one incoming
 # connection at a time.
@@ -45,7 +60,19 @@ loop do
   # that can be used in a similar fashion to other Ruby
   # I/O objects. (In fact, TCPSocket is a subclass of IO.)
   path = requested_file(myServer.request())
-  content_folder = YAML.load_file('config.yml')['content_folder']
+
+  # Home
+  if /^\/$/.match?(path) == true
+    home_template = ERB.new(File.read('src/templates/home.erb'))
+    @posts       = list_titles_from_directory(content_folder + '/posts')
+    @suggestions = list_titles_from_directory(content_folder + '/suggestions')
+
+    # Home made inheritance
+    @content = home_template.result_with_hash(posts: @posts, suggestions: @suggestions)
+    output = layout_template.result_with_hash(content: @content)
+    myServer.respond(output)
+    next
+  end
 
   # Statics
   if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
@@ -64,25 +91,18 @@ loop do
     next
   end
 
-  markdown_path = "content/#{content_folder}#{path}"
-  template = ERB.new(File.read('layout.erb'))
+  markdown_path = "#{content_folder}#{path}"
 
   if File.directory?(markdown_path)
+    # Force "/" on directory
     if (!/^.*\/$/.match?(markdown_path))
       slug = markdown_path.split('/')[-1]
       myServer.redirect("#{slug}/")
       next
     end
 
-    @content = ''
-    list_md = Dir["#{markdown_path}/*.md"]
-    list_md.each do |md|
-      md_file   = File.open(md)
-      response  = md_file.read
-      @content +=  markdownTitle.render(response)
-    end
-
-    output = template.result_with_hash(content: @content)
+    @content = list_titles_from_directory(markdown_path)
+    output = layout_template.result_with_hash(content: @content)
     myServer.respond(output, 200)
   else
     md_path_file = "#{markdown_path}.md"
@@ -96,7 +116,7 @@ loop do
     response = md_file.read
 
     @content = markdown.render(response)
-    output = template.result_with_hash(content: @content)
+    output = layout_template.result_with_hash(content: @content)
     myServer.respond(output, 200)
   end
 end

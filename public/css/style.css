@@ -8,6 +8,19 @@ h1, h2, h3, h4, h5 {
   font-family: sans-serif;
 }
 
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 1.3rem;
+}
+
 a {
   text-decoration: none;
   border-bottom: 2px solid gray;
@@ -20,6 +33,15 @@ a:hover {
   border-bottom: 1px solid gray;
 }
 
+body > header {
+  padding: 20px;
+}
+
 .container {
   padding: 20px;
+}
+
+.container:has(section){
+  display: flex;
+  gap: 15px;
 }
