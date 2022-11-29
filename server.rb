@@ -27,6 +27,14 @@ class Server
     @socket.close
   end
 
+  def redirect(url)
+    @socket.print "HTTP/1.1 302 \
+                 OK\r\n" +
+                 "Content-Type: text/html; charset=UTF-8\r\n" +
+                 "Location: #{url}"
+    @socket.close
+  end
+
   def respond_404()
     respond('<h1>Contenu introuvable</h1>', 404)
   end

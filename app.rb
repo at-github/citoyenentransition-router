@@ -1,9 +1,10 @@
 require 'bundler/setup'
 require 'redcarpet'
 require 'erb'
-require "yaml"
+require 'yaml'
 
 require_relative 'server'
+require_relative 'src/render/RenderOnlyTitle'
 
 # This helper function parses the Request-Line and
 # generates a path to a file on the server.
@@ -28,11 +29,12 @@ def requested_file(request)
     part == '..' ? clean.pop : clean << part
   end
 
-  File.join(WEB_ROOT, path)
+  request
 end
 
 myServer = Server.new
 markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
+markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle, extensions = {})
 
 STDOUT.puts 'Server started'
 
@@ -43,6 +45,7 @@ loop do
   # that can be used in a similar fashion to other Ruby
   # I/O objects. (In fact, TCPSocket is a subclass of IO.)
   path = requested_file(myServer.request())
+  content_folder = YAML.load_file('config.yml')['content_folder']
 
   # Statics
   if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
@@ -58,9 +61,31 @@ loop do
     file = File.open('.' + path)
     file_data = file.read
     myServer.respond(file_data, 200, content_type)
+    next
+  end
+
+  markdown_path = "content/#{content_folder}#{path}"
+  template = ERB.new(File.read('layout.erb'))
+
+  if File.directory?(markdown_path)
+    if (!/^.*\/$/.match?(markdown_path))
+      slug = markdown_path.split('/')[-1]
+      myServer.redirect("#{slug}/")
+      next
+    end
+
+    @content = ''
+    list_md = Dir["#{markdown_path}/*.md"]
+    list_md.each do |md|
+      md_file   = File.open(md)
+      response  = md_file.read
+      @content +=  markdownTitle.render(response)
+    end
+
+    output = template.result_with_hash(content: @content)
+    myServer.respond(output, 200)
   else
-    content_folder = YAML.load_file('config.yml')['content_folder']
-    md_path_file = "content/#{content_folder}#{path}.md"
+    md_path_file = "#{markdown_path}.md"
 
     if !File.exist?(md_path_file)
       myServer.respond_404()
@@ -71,7 +96,6 @@ loop do
     response = md_file.read
 
     @content = markdown.render(response)
-    template = ERB.new(File.read('layout.erb'))
     output = template.result_with_hash(content: @content)
     myServer.respond(output, 200)
   end
