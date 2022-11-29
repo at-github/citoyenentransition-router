@@ -39,8 +39,8 @@ layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
 STDOUT.puts 'Server started'
 
-def list_titles_from_directory(folder_path)
-  markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle, extensions = {})
+def list_titles_from_directory(folder_path, slug)
+  markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle.new(slug), extensions = {})
   content = ''
   list_md = Dir["#{folder_path}/*.md"]
 
@@ -64,10 +64,16 @@ loop do
   # Home
   if /^\/$/.match?(path) == true
     home_template = ERB.new(File.read('src/templates/home.erb'))
-    @posts       = list_titles_from_directory(content_folder + '/posts')
-    @suggestions = list_titles_from_directory(content_folder + '/suggestions')
+    @posts = list_titles_from_directory(
+      content_folder + '/posts',
+      'posts'
+    )
+    @suggestions = list_titles_from_directory(
+      content_folder + '/suggestions',
+      'suggestions'
+    )
 
-    # Home made inheritance
+    # Homemade inheritance
     @content = home_template.result_with_hash(posts: @posts, suggestions: @suggestions)
     output = layout_template.result_with_hash(content: @content)
     myServer.respond(output)
@@ -101,7 +107,7 @@ loop do
       next
     end
 
-    @content = list_titles_from_directory(markdown_path)
+    @content = list_titles_from_directory(markdown_path, path.gsub('/', ''))
     output = layout_template.result_with_hash(content: @content)
     myServer.respond(output, 200)
   else
