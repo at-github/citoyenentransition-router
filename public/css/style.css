@@ -23,18 +23,30 @@ h3 {
 
 a {
   text-decoration: none;
-  border-bottom: 2px solid gray;
-  transition: background-color 250ms ease-in-out;
+  border-bottom: 1px solid gray;
+  padding-bottom: 2px;
+  color: #333;
+  transition: border-bottom 500ms ease-in-out, color 500ms ease-in-out;
 }
 
 a:hover {
-  background-color: #DDD;
-  color: #000;
-  border-bottom: 1px solid gray;
+  border-bottom: 1px solid #1145e9;
+  color: #1145e9;
+}
+
+ul {
+  padding-left: 30px;
+  list-style-type: '👉 ';
+}
+
+li {
+  margin: 15px 0;
 }
 
 body > header {
   padding: 20px;
+  max-width: 1024px;
+  margin: 0 auto;
 }
 
 .container {
@@ -43,5 +55,8 @@ body > header {
 
 .container:has(section){
   display: flex;
+  justify-content: space-between;
   gap: 15px;
+  max-width: 1024px;
+  margin: 0 auto;
 }

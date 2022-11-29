@@ -33,7 +33,13 @@ def requested_file(request)
 end
 
 myServer = Server.new
-markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
+markdown_content = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
+markdown_links = Redcarpet::Markdown.new(
+  Redcarpet::Render::HTML.new(
+    link_attributes: {target: '_blank'}
+  ),
+  extensions = {}
+)
 content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
@@ -73,8 +79,17 @@ loop do
       'suggestions'
     )
 
+    links_md_path = content_folder + '/links.md'
+    links_md_file = File.open(links_md_path)
+    links_content = links_md_file.read
+    @links        = markdown_links.render(links_content)
+
     # Homemade inheritance
-    @content = home_template.result_with_hash(posts: @posts, suggestions: @suggestions)
+    @content = home_template.result_with_hash(
+      posts: @posts,
+      suggestions: @suggestions,
+      links: @links
+    )
     output = layout_template.result_with_hash(content: @content)
     myServer.respond(output)
     next
@@ -121,7 +136,7 @@ loop do
     md_file = File.open(md_path_file)
     response = md_file.read
 
-    @content = markdown.render(response)
+    @content = markdown_content.render(response)
     output = layout_template.result_with_hash(content: @content)
     myServer.respond(output, 200)
   end
