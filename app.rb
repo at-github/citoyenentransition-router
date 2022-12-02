@@ -6,6 +6,25 @@ require 'yaml'
 require_relative 'server'
 require_relative 'src/render/RenderOnlyTitle'
 
+myServer = Server.new
+markdown_content = Redcarpet::Markdown.new(
+  Redcarpet::Render::HTML,
+  extensions = {}
+)
+markdown_links = Redcarpet::Markdown.new(
+  Redcarpet::Render::HTML.new(
+    link_attributes: {target: '_blank'}
+  ),
+  extensions = {}
+)
+
+if !File.directory? 'content'
+  abort 'You must create content folder'
+end
+
+content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
+layout_template = ERB.new(File.read('src/templates/layout.erb'))
+
 # This helper function parses the Request-Line and
 # generates a path to a file on the server.
 # Takes a request line (e.g. "GET /path?foo=bar HTTP/1.1")
@@ -32,21 +51,11 @@ def requested_file(request)
   request
 end
 
-myServer = Server.new
-markdown_content = Redcarpet::Markdown.new(Redcarpet::Render::HTML, extensions = {})
-markdown_links = Redcarpet::Markdown.new(
-  Redcarpet::Render::HTML.new(
-    link_attributes: {target: '_blank'}
-  ),
-  extensions = {}
-)
-content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
-layout_template = ERB.new(File.read('src/templates/layout.erb'))
-
-STDOUT.puts 'Server started'
-
 def list_titles_from_directory(folder_path, slug)
-  markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle.new(slug), extensions = {})
+  markdownTitle = Redcarpet::Markdown.new(
+    RenderOnlyTitle.new(slug),
+    extensions = {}
+  )
   content = ''
   list_md = Dir["#{folder_path}/*.md"]
 
@@ -59,6 +68,7 @@ def list_titles_from_directory(folder_path, slug)
   content
 end
 
+STDOUT.puts 'Server started'
 # loop infinitely, processing one incoming
 # connection at a time.
 loop do
