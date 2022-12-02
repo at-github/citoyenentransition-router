@@ -6,6 +6,18 @@ require 'yaml'
 require_relative 'server'
 require_relative 'src/render/RenderOnlyTitle'
 
+# Checks
+abort 'You must create content folder'      if !File.directory? 'content'
+abort 'You must create a "config.yml" file' if !File.exist? 'config.yml'
+
+config = YAML.load_file('config.yml')
+abort 'You must create a "content_folder" key in config.yml file,'\
+  ' with a correct path' if !config
+
+content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
+abort 'Wrong path for content_folder key'\
+  'in config.yml file' if !File.directory? content_folder
+
 myServer = Server.new
 markdown_content = Redcarpet::Markdown.new(
   Redcarpet::Render::HTML,
@@ -17,17 +29,6 @@ markdown_links = Redcarpet::Markdown.new(
   ),
   extensions = {}
 )
-
-abort 'You must create content folder'      if !File.directory? 'content'
-abort 'You must create a "config.yml" file' if !File.exist? 'config.yml'
-
-config = YAML.load_file('config.yml')
-abort 'You must create a "content_folder" key in config.yml file,'\
-  ' with a correct path' if !config
-
-content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
-abort 'Wrong path for content_folder key'\
-  'in config.yml file' if !File.directory? content_folder
 
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
