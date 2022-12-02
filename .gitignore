@@ -56,4 +56,4 @@ config.yml
 # Used by RuboCop. Remote config files pulled in from inherit_from directive.
 # .rubocop-https?--*
 
-/content/
+content/*
