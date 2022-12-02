@@ -18,21 +18,17 @@ markdown_links = Redcarpet::Markdown.new(
   extensions = {}
 )
 
-if !File.directory? 'content'
-  abort 'You must create content folder'
-end
-
-if !File.exist? 'config.yml'
-  abort 'You must create a "config.yml" file'
-end
+abort 'You must create content folder'      if !File.directory? 'content'
+abort 'You must create a "config.yml" file' if !File.exist? 'config.yml'
 
 config = YAML.load_file('config.yml')
-if !config
-  abort 'You must add a "content_folder" key in config.yml file,'\
-    ' with a correct path'
-end
+abort 'You must create a "content_folder" key in config.yml file,'\
+  ' with a correct path' if !config
 
-content_folder = 'conytent/' + YAML.load_file('config.yml')['content_folder']
+content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
+abort 'Wrong path for content_folder key'\
+  'in config.yml file' if !File.directory? content_folder
+
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
 # This helper function parses the Request-Line and
