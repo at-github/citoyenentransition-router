@@ -26,7 +26,13 @@ if !File.exist? 'config.yml'
   abort 'You must create a "config.yml" file'
 end
 
-content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
+config = YAML.load_file('config.yml')
+if !config
+  abort 'You must add a "content_folder" key in config.yml file,'\
+    ' with a correct path'
+end
+
+content_folder = 'conytent/' + YAML.load_file('config.yml')['content_folder']
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
 # This helper function parses the Request-Line and
