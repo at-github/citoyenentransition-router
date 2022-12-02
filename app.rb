@@ -22,6 +22,10 @@ if !File.directory? 'content'
   abort 'You must create content folder'
 end
 
+if !File.exist? 'config.yml'
+  abort 'You must create a "config.yml" file'
+end
+
 content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
 
