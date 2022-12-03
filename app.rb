@@ -64,6 +64,15 @@ def list_titles_from_directory(folder_path, slug)
   content
 end
 
+def translate_slug(path, translations)
+  slug, = /^\/([a-z]+)\/.*$/.match(path).captures
+  slugTranslated = translations.key(slug)
+
+  return path if !slugTranslated
+
+  path.gsub(slug, slugTranslated)
+end
+
 myServer = Server.new
 markdown_content = Redcarpet::Markdown.new(
   Redcarpet::Render::HTML,
@@ -78,6 +87,7 @@ markdown_links = Redcarpet::Markdown.new(
 
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
 @title = config['title']
+translations = config['translations']
 STDOUT.puts 'Server started localhost:2345'
 # loop infinitely, processing one incoming
 # connection at a time.
@@ -133,7 +143,7 @@ loop do
     next
   end
 
-  markdown_path = "#{content_folder}#{path}"
+  markdown_path = "#{content_folder}#{translate_slug(path, translations)}"
 
   if File.directory?(markdown_path)
     # Force "/" on directory
