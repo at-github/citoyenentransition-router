@@ -51,10 +51,7 @@ def requested_file(request)
 end
 
 def list_titles_from_directory(folder_path, slug)
-  markdownTitle = Redcarpet::Markdown.new(
-    RenderOnlyTitle.new(slug),
-    extensions = {}
-  )
+  markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle.new(slug))
   content = ''
   list_md = Dir["#{folder_path}/*.md"]
 
