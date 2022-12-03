@@ -65,7 +65,14 @@ def list_titles_from_directory(folder_path, slug)
 end
 
 def translate_slug(path, translations)
-  slug, = /^\/([a-z]+)\/.*$/.match(path).captures
+  # page
+  result = /^\/([a-z]+)\/.*$/.match(path)
+  # folder
+  result = /^\/([a-z]+)$/.match(path) if !result
+
+  return path if !result
+
+  slug, = result.captures
   slugTranslated = translations.key(slug)
 
   return path if !slugTranslated
@@ -148,8 +155,7 @@ loop do
   if File.directory?(markdown_path)
     # Force "/" on directory
     if (!/^.*\/$/.match?(markdown_path))
-      slug = markdown_path.split('/')[-1]
-      myServer.redirect("#{slug}/")
+      myServer.redirect("#{path}/")
       next
     end
 
