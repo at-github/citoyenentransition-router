@@ -11,10 +11,13 @@ abort 'You must create content folder'      if !File.directory? 'content'
 abort 'You must create a "config.yml" file' if !File.exist? 'config.yml'
 
 config = YAML.load_file('config.yml')
-abort 'You must create a "content_folder" key in config.yml file,'\
-  ' with a correct path' if !config
+abort 'You must create a "title" key in config.yml file,'\
+  ' with a correct path' if !config.key? "title"
 
-content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
+abort 'You must create a "content_folder" key in config.yml file,'\
+  ' with a correct path' if !config.key? "content_folder"
+
+content_folder = 'content/' + config['content_folder']
 abort 'Wrong path for content_folder key'\
   ' in config.yml file' if !File.directory? content_folder
 
@@ -74,7 +77,7 @@ markdown_links = Redcarpet::Markdown.new(
 )
 
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
-
+@title = config['title']
 STDOUT.puts 'Server started localhost:2345'
 # loop infinitely, processing one incoming
 # connection at a time.
@@ -103,6 +106,7 @@ loop do
 
     # Homemade inheritance
     @content = home_template.result_with_hash(
+      title: @title,
       posts: @posts,
       suggestions: @suggestions,
       links: @links
