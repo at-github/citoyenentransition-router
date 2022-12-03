@@ -96,6 +96,23 @@ loop do
   # I/O objects. (In fact, TCPSocket is a subclass of IO.)
   path = requested_file(myServer.request())
 
+  # Statics
+  if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
+    if !File.exist?('.' + path)
+      myServer.respond_404(render.render_404())
+      next
+    end
+
+    content_type = 'text/html'
+    content_type = 'text/css' if /^\/public\/css.*$/.match?(path)
+    content_type = 'application/javascript' if /^\/public\/js.*$/.match?(path)
+
+    file = File.open('.' + path)
+    file_data = file.read
+    myServer.respond(file_data, 200, content_type)
+    next
+  end
+
   # Home
   if /^\/$/.match?(path) == true
     home_template = ERB.new(File.read('src/templates/home.erb'))
@@ -114,23 +131,6 @@ loop do
     end
 
     myServer.respond(render.render_home(content))
-    next
-  end
-
-  # Statics
-  if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
-    if !File.exist?('.' + path)
-      myServer.respond_404(render.render_404())
-      next
-    end
-
-    content_type = 'text/html'
-    content_type = 'text/css' if /^\/public\/css.*$/.match?(path)
-    content_type = 'application/javascript' if /^\/public\/js.*$/.match?(path)
-
-    file = File.open('.' + path)
-    file_data = file.read
-    myServer.respond(file_data, 200, content_type)
     next
   end
 
