@@ -18,20 +18,6 @@ content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
 abort 'Wrong path for content_folder key'\
   'in config.yml file' if !File.directory? content_folder
 
-myServer = Server.new
-markdown_content = Redcarpet::Markdown.new(
-  Redcarpet::Render::HTML,
-  extensions = {}
-)
-markdown_links = Redcarpet::Markdown.new(
-  Redcarpet::Render::HTML.new(
-    link_attributes: {target: '_blank'}
-  ),
-  extensions = {}
-)
-
-layout_template = ERB.new(File.read('src/templates/layout.erb'))
-
 # This helper function parses the Request-Line and
 # generates a path to a file on the server.
 # Takes a request line (e.g. "GET /path?foo=bar HTTP/1.1")
@@ -75,7 +61,21 @@ def list_titles_from_directory(folder_path, slug)
   content
 end
 
-STDOUT.puts 'Server started'
+myServer = Server.new
+markdown_content = Redcarpet::Markdown.new(
+  Redcarpet::Render::HTML,
+  extensions = {}
+)
+markdown_links = Redcarpet::Markdown.new(
+  Redcarpet::Render::HTML.new(
+    link_attributes: {target: '_blank'}
+  ),
+  extensions = {}
+)
+
+layout_template = ERB.new(File.read('src/templates/layout.erb'))
+
+STDOUT.puts 'Server started localhost:2345'
 # loop infinitely, processing one incoming
 # connection at a time.
 loop do
