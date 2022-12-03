@@ -37,7 +37,7 @@ class Server
     @socket.close
   end
 
-  def respond_404()
-    respond('<h1>Contenu introuvable</h1>', 404)
+  def respond_404(message)
+    respond(message, 404)
   end
 end

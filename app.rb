@@ -79,6 +79,13 @@ markdown_links = Redcarpet::Markdown.new(
 )
 
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
+not_found_template    = ERB.new(File.read('src/templates/not_found.erb'))
+
+@content = not_found_template.result()
+content_404 = layout_template.result_with_hash(
+  content: @content,
+  title: @title
+)
 translation = Translation.new(config['translations'])
 
 STDOUT.puts 'Server started localhost:2345'
@@ -125,7 +132,7 @@ loop do
   # Statics
   if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
     if !File.exist?('.' + path)
-      myServer.respond_404()
+      myServer.respond_404(content_404)
       next
     end
 
@@ -155,7 +162,7 @@ loop do
     md_path_file = "#{markdown_path}.md"
 
     if !File.exist?(md_path_file)
-      myServer.respond_404()
+      myServer.respond_404(content_404)
       next
     end
 
