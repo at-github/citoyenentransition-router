@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr-FR">
   <head>
-    <title><%= @title %></title>
+    <title><%= title %></title>
     <link rel="stylesheet" href="/public/css/style.css" media="all" />
     <script src="/public/js/app.js" type="module"></script>
   </head>
@@ -12,7 +12,8 @@
       dans son quotidien pour contribuer à un environnement plus sain.</p>
     </header>
     <div class="container">
-      <%= @content %>
+      <%= content %>
+      <aside><%= links %></aside>
     </div>
   </body>
 </html>

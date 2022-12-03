@@ -1,4 +1,4 @@
-<% @content.each do |section| %>
+<% content.each do |section| %>
   <section id="<%= section['name'] %>-listing">
     <h2>
       <a href="<%= section['name'] %>"><%= section['name'].capitalize %></a>
@@ -6,5 +6,3 @@
     <%= section['content'] %>
   </section>
 <%end%>
-
-<aside><%= @links %></aside>

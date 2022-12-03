@@ -51,9 +51,6 @@ body > header {
 
 .container {
   padding: 20px;
-}
-
-.container:has(section){
   display: flex;
   justify-content: space-between;
   gap: 15px;
