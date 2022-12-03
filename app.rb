@@ -6,6 +6,7 @@ require 'yaml'
 require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
 require_relative 'src/render/markdown/RenderOnlyTitle'
+require_relative 'src/render/template/Render'
 
 # Checks
 abort 'You must create content folder'      if !File.directory? 'content'
@@ -78,24 +79,13 @@ markdown_links = Redcarpet::Markdown.new(
   extensions = {}
 )
 
-
 links_md_path = content_folder + '/links.md'
 links_md_file = File.open(links_md_path)
 links_content = links_md_file.read
 @links        = markdown_links.render(links_content)
 
-layout_template = ERB.new(File.read('src/templates/layout.erb'))
-archive_template = ERB.new(File.read('src/templates/archive.erb'))
-page_template = ERB.new(File.read('src/templates/page.erb'))
-not_found_template    = ERB.new(File.read('src/templates/not_found.erb'))
-
-content = not_found_template.result()
-content_404 = layout_template.result_with_hash(
-  content: content,
-  title: @title,
-  links: @links
-)
 translation = Translation.new(config['translations'])
+render = Render.new(@title, @links)
 
 STDOUT.puts 'Server started localhost:2345'
 # loop infinitely, processing one incoming
@@ -123,21 +113,14 @@ loop do
       ] if File.directory? item
     end
 
-    # Homemade inheritance
-    content = home_template.result_with_hash(content: content)
-    output = layout_template.result_with_hash(
-      content: content,
-      title: @title,
-      links: @links
-    )
-    myServer.respond(output)
+    myServer.respond(render.render_home(content))
     next
   end
 
   # Statics
   if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
     if !File.exist?('.' + path)
-      myServer.respond_404(content_404)
+      myServer.respond_404(render.render_404())
       next
     end
 
@@ -153,6 +136,7 @@ loop do
 
   markdown_path = "#{content_folder}#{translation.translate_slug(path)}"
 
+  # Archive
   if File.directory?(markdown_path)
     # Force "/" on directory
     if (!/^.*\/$/.match?(markdown_path))
@@ -161,19 +145,13 @@ loop do
     end
 
     content = list_titles_from_directory(markdown_path, path.gsub('/', ''))
-    archive = archive_template.result_with_hash(content: content)
-    output = layout_template.result_with_hash(
-      content: archive,
-      title: @title,
-      links: @links
-    )
-    myServer.respond(output, 200)
-    # Page
+    myServer.respond(render.render_archive(content))
+  # Page
   else
     md_path_file = "#{markdown_path}.md"
 
     if !File.exist?(md_path_file)
-      myServer.respond_404(content_404)
+      myServer.respond_404(render.render_404())
       next
     end
 
@@ -181,12 +159,6 @@ loop do
     response = md_file.read
 
     content = markdown_content.render(response)
-    page = page_template.result_with_hash(content: content)
-    output = layout_template.result_with_hash(
-      content: page,
-      title: @title,
-      links: @links
-    )
-    myServer.respond(output, 200)
+    myServer.respond(render.render_page(content))
   end
 end
