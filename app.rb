@@ -16,7 +16,7 @@ abort 'You must create a "content_folder" key in config.yml file,'\
 
 content_folder = 'content/' + YAML.load_file('config.yml')['content_folder']
 abort 'Wrong path for content_folder key'\
-  'in config.yml file' if !File.directory? content_folder
+  ' in config.yml file' if !File.directory? content_folder
 
 # This helper function parses the Request-Line and
 # generates a path to a file on the server.
@@ -64,7 +64,7 @@ end
 myServer = Server.new
 markdown_content = Redcarpet::Markdown.new(
   Redcarpet::Render::HTML,
-  extensions = {}
+  extensions = {tables: true}
 )
 markdown_links = Redcarpet::Markdown.new(
   Redcarpet::Render::HTML.new(
