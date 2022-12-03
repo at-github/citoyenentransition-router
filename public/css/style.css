@@ -79,6 +79,11 @@ body > header {
   height: 100%;
 }
 
+img {
+  width: 100%;
+  height: auto;
+}
+
 #links {
   min-width: 200px;
 }
