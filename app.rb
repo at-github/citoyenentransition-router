@@ -4,6 +4,7 @@ require 'erb'
 require 'yaml'
 
 require_relative 'server'
+require_relative 'src/services/Translation'
 require_relative 'src/render/RenderOnlyTitle'
 
 # Checks
@@ -13,6 +14,7 @@ abort 'You must create a "config.yml" file' if !File.exist? 'config.yml'
 config = YAML.load_file('config.yml')
 abort 'You must create a "title" key in config.yml file,'\
   ' with a correct path' if !config.key? "title"
+@title = config['title']
 
 abort 'You must create a "content_folder" key in config.yml file,'\
   ' with a correct path' if !config.key? "content_folder"
@@ -64,22 +66,6 @@ def list_titles_from_directory(folder_path, slug)
   content
 end
 
-def translate_slug(path, translations)
-  # page
-  result = /^\/([a-z]+)\/.*$/.match(path)
-  # folder
-  result = /^\/([a-z]+)$/.match(path) if !result
-
-  return path if !result
-
-  slug, = result.captures
-  slugTranslated = translations.key(slug)
-
-  return path if !slugTranslated
-
-  path.gsub(slug, slugTranslated)
-end
-
 myServer = Server.new
 markdown_content = Redcarpet::Markdown.new(
   Redcarpet::Render::HTML,
@@ -93,8 +79,8 @@ markdown_links = Redcarpet::Markdown.new(
 )
 
 layout_template = ERB.new(File.read('src/templates/layout.erb'))
-@title = config['title']
-translations = config['translations']
+translation = Translation.new(config['translations'])
+
 STDOUT.puts 'Server started localhost:2345'
 # loop infinitely, processing one incoming
 # connection at a time.
@@ -107,14 +93,19 @@ loop do
   # Home
   if /^\/$/.match?(path) == true
     home_template = ERB.new(File.read('src/templates/home.erb'))
-    @posts = list_titles_from_directory(
-      content_folder + '/posts',
-      'posts'
-    )
-    @suggestions = list_titles_from_directory(
-      content_folder + '/suggestions',
-      'suggestions'
-    )
+    @content = []
+
+    root = Dir["#{content_folder}/*"]
+    root.each do |item|
+      folder = item.split('/')[-1]
+      @content << Hash[
+        'name' => translation.untranslate(folder),
+        'content' => list_titles_from_directory(
+          item,
+          translation.untranslate(folder)
+        )
+      ] if File.directory? item
+    end
 
     links_md_path = content_folder + '/links.md'
     links_md_file = File.open(links_md_path)
@@ -123,12 +114,10 @@ loop do
 
     # Homemade inheritance
     @content = home_template.result_with_hash(
-      title: @title,
-      posts: @posts,
-      suggestions: @suggestions,
+      content: @content,
       links: @links
     )
-    output = layout_template.result_with_hash(content: @content)
+    output = layout_template.result_with_hash(content: @content, title: @title)
     myServer.respond(output)
     next
   end
@@ -150,7 +139,7 @@ loop do
     next
   end
 
-  markdown_path = "#{content_folder}#{translate_slug(path, translations)}"
+  markdown_path = "#{content_folder}#{translation.translate_slug(path)}"
 
   if File.directory?(markdown_path)
     # Force "/" on directory

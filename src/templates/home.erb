@@ -1,11 +1,10 @@
-<section id="suggestions-listing">
-  <h2><a href="/suggestions">Suggestions</a></h2>
-  <%= @suggestions %>
-</section>
-
-<section id="posts-listing">
-  <h2><a href="/posts">Articles</a></h2>
-  <%= @posts %>
-</section>
+<% @content.each do |section| %>
+  <section id="<%= section['name'] %>-listing">
+    <h2>
+      <a href="<%= section['name'] %>"><%= section['name'].capitalize %></a>
+    </h2>
+    <%= section['content'] %>
+  </section>
+<%end%>
 
 <aside><%= @links %></aside>

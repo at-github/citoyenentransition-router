@@ -31,7 +31,9 @@ class Server
     @socket.print "HTTP/1.1 302 \
                  OK\r\n" +
                  "Content-Type: text/html; charset=UTF-8\r\n" +
-                 "Location: #{url}"
+                 "Location: #{url}\r\n" +
+                 "Connection: close\r\n"
+    @socket.print "\r\n"
     @socket.close
   end
 
