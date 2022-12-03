@@ -66,7 +66,7 @@ end
 
 myServer = Server.new
 markdown_content = Redcarpet::Markdown.new(
-  Redcarpet::Render::HTML,
+  Redcarpet::Render::HTML.new(hard_wrap: true),
   extensions = {tables: true}
 )
 markdown_links = Redcarpet::Markdown.new(
