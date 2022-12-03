@@ -1,12 +1,11 @@
 require 'bundler/setup'
-require 'redcarpet'
 require 'erb'
 require 'yaml'
 
 require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
-require_relative 'src/render/markdown/RenderOnlyTitle'
 require_relative 'src/render/template/Render'
+require_relative 'src/services/Content'
 
 # Checks
 abort 'You must create content folder'      if !File.directory? 'content'
@@ -50,38 +49,10 @@ def requested_file(request)
   request
 end
 
-def list_titles_from_directory(folder_path, slug)
-  markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle.new(slug))
-  content = ''
-  list_md = Dir["#{folder_path}/*.md"]
-
-  list_md.each do |md|
-    md_file   = File.open(md)
-    response  = md_file.read
-    content +=  markdownTitle.render(response)
-  end
-
-  content
-end
-
 myServer = Server.new
-markdown_content = Redcarpet::Markdown.new(
-  Redcarpet::Render::HTML.new(hard_wrap: true),
-  extensions = {tables: true}
-)
-markdown_links = Redcarpet::Markdown.new(
-  Redcarpet::Render::HTML.new(
-    link_attributes: {target: '_blank'}
-  ),
-  extensions = {}
-)
-
-links_md_path = content_folder + '/links.md'
-links_md_file = File.open(links_md_path)
-links_content = links_md_file.read
-@links        = markdown_links.render(links_content)
-
 translation = Translation.new(config['translations'])
+content = Content.new(content_folder, translation)
+@links = content.get_links()
 render = Render.new(@title, @links)
 
 STDOUT.puts 'Server started localhost:2345'
@@ -112,22 +83,8 @@ loop do
 
   # Home
   if /^\/$/.match?(path) == true
-    home_template = ERB.new(File.read('src/templates/home.erb'))
-    content = []
-
-    root = Dir["#{content_folder}/*"]
-    root.each do |item|
-      folder = item.split('/')[-1]
-      content << Hash[
-        'name' => translation.untranslate(folder),
-        'content' => list_titles_from_directory(
-          item,
-          translation.untranslate(folder)
-        )
-      ] if File.directory? item
-    end
-
-    myServer.respond(render.render_home(content))
+    content_html = content.get_list_titles_from_directories()
+    myServer.respond(render.render_home(content_html))
     next
   end
 
@@ -141,21 +98,19 @@ loop do
       next
     end
 
-    content = list_titles_from_directory(markdown_path, path.gsub('/', ''))
-    myServer.respond(render.render_archive(content))
+    content_html = content.get_list_titles_from_directory(markdown_path, path.gsub('/', ''))
+    myServer.respond(render.render_archive(content_html))
   # Page
   else
     md_path_file = "#{markdown_path}.md"
 
-    if !File.exist?(md_path_file)
+    begin
+      content_html = content.get_page(md_path_file)
+    rescue MardownNotFoundException
       myServer.respond_404(render.render_404())
       next
     end
 
-    md_file = File.open(md_path_file)
-    response = md_file.read
-
-    content = markdown_content.render(response)
-    myServer.respond(render.render_page(content))
+    myServer.respond(render.render_page(content_html))
   end
 end
