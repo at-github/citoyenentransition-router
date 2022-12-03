@@ -5,7 +5,7 @@ require 'yaml'
 
 require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
-require_relative 'src/render/RenderOnlyTitle'
+require_relative 'src/render/markdown/RenderOnlyTitle'
 
 # Checks
 abort 'You must create content folder'      if !File.directory? 'content'
