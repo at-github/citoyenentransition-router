@@ -1,7 +1,6 @@
 class Translation
   def initialize(translations)
     @translations = translations
-    STDOUT.puts translations
   end
 
   def translate(term)
@@ -12,7 +11,6 @@ class Translation
   end
 
   def untranslate(term)
-    STDOUT.puts term
     return @translations[term] ? @translations[term] : term
   end
 

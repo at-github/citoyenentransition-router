@@ -3,7 +3,7 @@ require 'redcarpet'
 require 'erb'
 require 'yaml'
 
-require_relative 'server'
+require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
 require_relative 'src/render/RenderOnlyTitle'
 
