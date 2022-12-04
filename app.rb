@@ -124,7 +124,8 @@ loop do
     myServer.respond(
       render.render_page(
         content_html,
-        content.get_title(md_path_file)
+        content.get_title(md_path_file),
+        path
       )
     )
   end

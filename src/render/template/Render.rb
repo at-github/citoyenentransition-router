@@ -6,7 +6,7 @@ class Render
     @layout_template    = ERB.new(File.read('src/templates/layout.erb'))
     @home_template      = ERB.new(File.read('src/templates/home.erb'))
     @archive_template   = ERB.new(File.read('src/templates/archive.erb'))
-    @page_template      = ERB.new(File.read('src/templates/archive.erb'))
+    @page_template      = ERB.new(File.read('src/templates/page.erb'))
     @not_found_template = ERB.new(File.read('src/templates/not_found.erb'))
   end
 
@@ -29,16 +29,20 @@ class Render
   def render_archive(content, title)
     return render(
       @archive_template.result_with_hash(
-        content: content
+        content: content,
+        title: title
       ),
       title
     )
   end
 
-  def render_page(content, title)
+  def render_page(content, title, slug)
+    category = /^\/(?<category>.*)\/.*$/.match(slug)['category']
+
     return render(
       @page_template.result_with_hash(
-        content: content
+        content: content,
+        category: category
       ),
       title
     )

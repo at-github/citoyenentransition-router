@@ -1,3 +1,9 @@
-<section id="page">
-  <%= content %>
-</section>
+<main>
+  <nav id="breadcrumb">
+    <a href="/">⌂</a> /
+    <a href="/<%= category %>"><%= category.capitalize %></a>
+  </nav>
+  <section id="page">
+    <%= content %>
+  </section>
+</main>
