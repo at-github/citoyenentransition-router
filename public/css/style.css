@@ -113,3 +113,13 @@ img {
   margin-right: 5px;
   font-size: 15px;
 }
+
+@media (max-width: 901px) {
+  .container {
+    display: block;
+  }
+
+  .container > * {
+    margin-bottom: 10vw;
+  }
+}
