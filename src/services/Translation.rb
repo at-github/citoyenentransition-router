@@ -1,6 +1,6 @@
 class Translation
   def initialize(translations)
-    @translations = translations
+    @translations = !translations.nil? ? translations : {}
   end
 
   def translate(term)
