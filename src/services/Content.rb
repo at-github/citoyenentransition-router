@@ -1,6 +1,5 @@
 require 'redcarpet'
 require_relative '../render/markdown/RenderSimpleTitle'
-require_relative '../render/markdown/RenderTitleWithLink'
 require_relative './exceptions/MardownNotFoundException'
 
 class Content
@@ -45,14 +44,19 @@ class Content
   end
 
   def get_list_titles_from_directory(folder_path, slug)
-    markdownTitle = Redcarpet::Markdown.new(RenderTitleWithLink.new(slug))
     content = ''
 
     list_md = Dir["#{folder_path}/*.md"]
     list_md.each do |md|
       md_file  = File.open(md)
       response = md_file.read
-      content +=  markdownTitle.render(response)
+
+      text = @markdownSimpleTitle.render(response)
+      content += "<h3>
+        <a href=\"/#{slug}/#{text.gsub(' ', '-').downcase}\">
+          #{text}
+        </a>
+      </h3>"
     end
 
     content
