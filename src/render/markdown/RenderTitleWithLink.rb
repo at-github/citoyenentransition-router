@@ -1,4 +1,4 @@
-class RenderOnlyTitle < Redcarpet::Render::Base
+class RenderTitleWithLink < Redcarpet::Render::Base
   def initialize(slug)
     super()
     @slug = slug

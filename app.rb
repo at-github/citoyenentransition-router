@@ -98,8 +98,18 @@ loop do
       next
     end
 
-    content_html = content.get_list_titles_from_directory(markdown_path, path.gsub('/', ''))
-    myServer.respond(render.render_archive(content_html))
+    slug = path.gsub('/', '')
+    content_html = content.get_list_titles_from_directory(
+      markdown_path,
+      slug
+    )
+
+    myServer.respond(
+      render.render_archive(
+        content_html,
+        slug
+      )
+    )
   # Page
   else
     md_path_file = "#{markdown_path}.md"
@@ -111,6 +121,11 @@ loop do
       next
     end
 
-    myServer.respond(render.render_page(content_html))
+    myServer.respond(
+      render.render_page(
+        content_html,
+        content.get_title(md_path_file)
+      )
+    )
   end
 end

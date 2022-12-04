@@ -1,5 +1,6 @@
 require 'redcarpet'
-require_relative '../render/markdown/RenderOnlyTitle'
+require_relative '../render/markdown/RenderSimpleTitle'
+require_relative '../render/markdown/RenderTitleWithLink'
 require_relative './exceptions/MardownNotFoundException'
 
 class Content
@@ -11,7 +12,14 @@ class Content
       ),
       extensions = {}
     )
+    @markdownSimpleTitle = Redcarpet::Markdown.new(RenderSimpleTitle.new())
     @translation = translation
+  end
+
+  def get_title(path)
+    md_file = File.open(path)
+    response = md_file.read
+    @markdownSimpleTitle.render(response)
   end
 
   def get_links()
@@ -26,7 +34,6 @@ class Content
       raise MardownNotFoundException.new('foo')
     end
 
-
     md_file = File.open(path)
     response = md_file.read
 
@@ -38,7 +45,7 @@ class Content
   end
 
   def get_list_titles_from_directory(folder_path, slug)
-    markdownTitle = Redcarpet::Markdown.new(RenderOnlyTitle.new(slug))
+    markdownTitle = Redcarpet::Markdown.new(RenderTitleWithLink.new(slug))
     content = ''
 
     list_md = Dir["#{folder_path}/*.md"]

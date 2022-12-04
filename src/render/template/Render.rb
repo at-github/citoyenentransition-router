@@ -1,6 +1,6 @@
 class Render
   def initialize(title, links)
-    @title = title
+    @title = title.capitalize
     @links = links
 
     @layout_template    = ERB.new(File.read('src/templates/layout.erb'))
@@ -10,10 +10,12 @@ class Render
     @not_found_template = ERB.new(File.read('src/templates/not_found.erb'))
   end
 
-  def render(content)
+  def render(content, title = nil)
+    final_title = title ? "#{title.capitalize} - #{@title}" : @title
+
     @layout_template.result_with_hash(
       content: content,
-      title: @title,
+      title: final_title,
       links: @links
     )
   end
@@ -24,16 +26,22 @@ class Render
     ))
   end
 
-  def render_archive(content)
-    return render(@archive_template.result_with_hash(
+  def render_archive(content, title)
+    return render(
+      @archive_template.result_with_hash(
         content: content
-    ))
+      ),
+      title
+    )
   end
 
-  def render_page(content)
-    return render(@page_template.result_with_hash(
+  def render_page(content, title)
+    return render(
+      @page_template.result_with_hash(
         content: content
-    ))
+      ),
+      title
+    )
   end
 
   def render_404()
