@@ -8,10 +8,11 @@ require_relative 'src/render/template/Render'
 require_relative 'src/services/Content'
 
 # Checks
-abort 'You must create content folder'      if !File.directory? 'content'
-abort 'You must create a "config.yml" file' if !File.exist? 'config.yml'
+pwd  = File.dirname(File.expand_path(__FILE__))
+abort 'You must create content folder'      if !File.directory? "#{pwd}/content"
+abort 'You must create a "config.yml" file' if !File.exist? "#{pwd}/config.yml"
 
-config = YAML.load_file('config.yml')
+config = YAML.load_file("#{pwd}/config.yml")
 abort 'You must create a "title" key in config.yml file,'\
   ' with a correct path' if !config.key? "title"
 @title = config['title']
@@ -19,7 +20,7 @@ abort 'You must create a "title" key in config.yml file,'\
 abort 'You must create a "content_folder" key in config.yml file,'\
   ' with a correct path' if !config.key? "content_folder"
 
-content_folder = 'content/' + config['content_folder']
+content_folder = "#{pwd}/content/#{config['content_folder']}"
 abort 'Wrong path for content_folder key'\
   ' in config.yml file' if !File.directory? content_folder
 
@@ -27,7 +28,7 @@ myServer = Server.new
 translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
 @links = content.get_links()
-render = Render.new(@title, @links)
+render = Render.new(pwd, @title, @links)
 
 STDOUT.puts 'Server started localhost:2345'
 loop do
@@ -35,7 +36,8 @@ loop do
 
   # Statics
   if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
-    if !File.exist?('.' + path)
+    full_path = "#{pwd}#{path}"
+    if !File.exist?(full_path)
       myServer.respond_404(render.render_404())
       next
     end
@@ -44,7 +46,7 @@ loop do
     content_type = 'text/css' if /^\/public\/css.*$/.match?(path)
     content_type = 'application/javascript' if /^\/public\/js.*$/.match?(path)
 
-    file = File.open('.' + path)
+    file = File.open(full_path)
     file_data = file.read
     myServer.respond(file_data, 200, content_type)
     next

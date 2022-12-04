@@ -1,13 +1,13 @@
 class Render
-  def initialize(title, links)
+  def initialize(root, title, links)
     @title = title.capitalize
     @links = links
 
-    @layout_template    = ERB.new(File.read('src/templates/layout.erb'))
-    @home_template      = ERB.new(File.read('src/templates/home.erb'))
-    @archive_template   = ERB.new(File.read('src/templates/archive.erb'))
-    @page_template      = ERB.new(File.read('src/templates/page.erb'))
-    @not_found_template = ERB.new(File.read('src/templates/not_found.erb'))
+    @layout_template    = ERB.new(File.read("#{root}/src/templates/layout.erb"))
+    @home_template      = ERB.new(File.read("#{root}/src/templates/home.erb"))
+    @archive_template   = ERB.new(File.read("#{root}/src/templates/archive.erb"))
+    @page_template      = ERB.new(File.read("#{root}/src/templates/page.erb"))
+    @not_found_template = ERB.new(File.read("#{root}/src/templates/not_found.erb"))
   end
 
   def render(content, title = nil)
