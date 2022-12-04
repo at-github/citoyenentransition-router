@@ -57,6 +57,7 @@ loop do
     next
   end
 
+  # Translate slug if needed
   content_path = "#{content_folder}#{translation.translate_slug(path)}"
 
   # Archive
