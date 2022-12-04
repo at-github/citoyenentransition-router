@@ -57,19 +57,19 @@ loop do
     next
   end
 
-  markdown_path = "#{content_folder}#{translation.translate_slug(path)}"
+  content_path = "#{content_folder}#{translation.translate_slug(path)}"
 
   # Archive
-  if File.directory?(markdown_path)
+  if File.directory?(content_path)
     # Force "/" on directory
-    if (!/^.*\/$/.match?(markdown_path))
+    if (!/^.*\/$/.match?(content_path))
       myServer.redirect("#{path}/")
       next
     end
 
     slug = path.gsub('/', '')
     content_html = content.get_list_titles_from_directory(
-      markdown_path,
+      content_path,
       slug
     )
 
@@ -79,23 +79,24 @@ loop do
         slug
       )
     )
-  # Page
-  else
-    md_path_file = "#{markdown_path}.md"
-
-    begin
-      content_html = content.get_page(md_path_file)
-    rescue MardownNotFoundException
-      myServer.respond_404(render.render_404())
-      next
-    end
-
-    myServer.respond(
-      render.render_page(
-        content_html,
-        content.get_title(md_path_file),
-        path
-      )
-    )
+    next
   end
+
+  # Page
+  markdown_path = "#{content_path}.md"
+
+  begin
+    content_html = content.get_page(markdown_path)
+  rescue MardownNotFoundException
+    myServer.respond_404(render.render_404())
+    next
+  end
+
+  myServer.respond(
+    render.render_page(
+      content_html,
+      content.get_title(markdown_path),
+      path
+    )
+  )
 end
