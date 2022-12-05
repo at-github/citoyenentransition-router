@@ -15,7 +15,7 @@ class PageController
 
   def respond
     begin
-      content_html = @content.get_page(@query)
+      content_html = @content.get_page @query
 
       @server.respond(
         @render.render_page(
@@ -25,7 +25,7 @@ class PageController
         )
       )
     rescue MardownNotFoundException
-      @server.respond_404(@render.render_404())
+      @server.respond_404 @render.render_404
     end
   end
 end

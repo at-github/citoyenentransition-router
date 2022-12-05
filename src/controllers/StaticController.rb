@@ -16,14 +16,14 @@ class StaticController
 
   def respond
     full_path = "#{@root}#{@query}"
-    if !File.exist?(full_path)
-      @server.respond_404(@render.render_404())
-      raise StaticNotFoundException.new()
+    if !File.exist? full_path
+      @server.respond_404 @render.render_404
+      raise StaticNotFoundException.new
     end
 
     content_type = 'text/html'
-    content_type = 'text/css' if /^\/public\/css.*$/.match?(@query)
-    content_type = 'application/javascript' if /^\/public\/js.*$/.match?(@query)
+    content_type = 'text/css' if /^\/public\/css.*$/.match? @query
+    content_type = 'application/javascript' if /^\/public\/js.*$/.match? @query
 
     @server.respond(
       @content.get_static_content(full_path),

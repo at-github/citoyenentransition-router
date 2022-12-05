@@ -16,7 +16,7 @@ class ArchiveController
   def respond
     # Force "/" on directory
     if (!/^.*\/$/.match?(@query))
-      @server.redirect("#{@query}/")
+      @server.redirect "#{@query}/"
       return
     end
 
