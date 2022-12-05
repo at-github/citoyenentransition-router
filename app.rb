@@ -25,16 +25,16 @@ content_folder = "#{pwd}/content/#{config['content_folder']}"
 abort 'Wrong path for content_folder key'\
   ' in config.yml file' if !File.directory? content_folder
 
-myServer = Server.new
+server = Server.new
 translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
 @links = content.get_links()
 render = Render.new(pwd, @title, @links)
-controller = Controller.new(pwd, myServer, render)
+controller = Controller.new(pwd, server, render)
 
 STDOUT.puts 'Server started localhost:2345'
 loop do
-  path = myServer.request()
+  path = server.request()
 
   # Statics
   if /^\/public.*$/.match?(path) == true
@@ -49,7 +49,7 @@ loop do
   # Home
   if /^\/$/.match?(path) == true
     content_html = content.get_list_titles_from_directories()
-    myServer.respond(render.render_home(content_html))
+    server.respond(render.render_home(content_html))
     next
   end
 
@@ -60,7 +60,7 @@ loop do
   if File.directory?(content_path)
     # Force "/" on directory
     if (!/^.*\/$/.match?(content_path))
-      myServer.redirect("#{path}/")
+      server.redirect("#{path}/")
       next
     end
 
@@ -69,7 +69,7 @@ loop do
       path
     )
 
-    myServer.respond(
+    server.respond(
       render.render_archive(
         content_html,
         path
@@ -82,11 +82,11 @@ loop do
   begin
     content_html = content.get_page(content_path)
   rescue MardownNotFoundException
-    myServer.respond_404(render.render_404())
+    server.respond_404(render.render_404())
     next
   end
 
-  myServer.respond(
+  server.respond(
     render.render_page(
       content_html,
       content.get_title_from_file(content_path),
