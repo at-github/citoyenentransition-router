@@ -27,6 +27,7 @@ class Render
   end
 
   def render_archive(content, title)
+    title = title.gsub('/', '')
     return render(
       @archive_template.result_with_hash(
         content: content,

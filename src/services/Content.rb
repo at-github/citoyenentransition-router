@@ -53,7 +53,7 @@ class Content
 
       text = @markdownSimpleTitle.render(response)
       content += "<h3>
-        <a href=\"/#{slug}/#{text.gsub(' ', '-').downcase}\">
+        <a href=\"#{slug}#{text.gsub(' ', '-').downcase}\">
           #{text}
         </a>
       </h3>"

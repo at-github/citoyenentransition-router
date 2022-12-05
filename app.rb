@@ -70,16 +70,15 @@ loop do
       next
     end
 
-    slug = path.gsub('/', '')
     content_html = content.get_list_titles_from_directory(
       content_path,
-      slug
+      path
     )
 
     myServer.respond(
       render.render_archive(
         content_html,
-        slug
+        path
       )
     )
     next
