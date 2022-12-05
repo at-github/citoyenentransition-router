@@ -20,12 +20,12 @@ class Dispatcher
     # Statics
     if /^\/public.*$/.match?(path) == true
       begin
-        staticController = StaticController.new(
-          @server,
-          @render,
-          @content
-        )
-        staticController.set_query(path).respond
+        @staticController = StaticController.new(
+            @server,
+            @render,
+            @content
+          ) if @staticController.nil?
+        @staticController.set_query(path).respond
         return
       rescue StaticNotFoundException
         return
@@ -34,32 +34,32 @@ class Dispatcher
 
     # Home
     if /^\/$/.match?(path) == true
-      homeController = HomeController.new(
+      @homeController = HomeController.new(
         @server,
         @render,
         @content
-      )
-      homeController.set_query(path).respond
+      ) if @homeController.nil?
+      @homeController.set_query(path).respond
       return
     end
 
     # Archive
     if @content.slug_directory?(path)
-      archiveController = ArchiveController.new(
+      @archiveController = ArchiveController.new(
         @server,
         @render,
         @content
-      )
-      archiveController.set_query(path).respond
+      ) if @archiveController.nil?
+      @archiveController.set_query(path).respond
       return
     end
 
     # Page
-    pageController = PageController.new(
+    @pageController = PageController.new(
       @server,
       @render,
       @content
-    )
-    pageController.set_query(path).respond
+    ) if @pageController.nil?
+    @pageController.set_query(path).respond
   end
 end
