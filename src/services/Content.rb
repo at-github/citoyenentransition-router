@@ -21,6 +21,9 @@ class Content
 
   def get_title_from_file(path)
     path = "#{path}.md" if ! /.*\.md$/.match? path
+    if !File.exist?(path)
+      raise MardownNotFoundException.new()
+    end
     md_file = File.open(path)
     response = md_file.read
 

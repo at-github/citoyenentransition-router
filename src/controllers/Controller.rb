@@ -56,4 +56,20 @@ class Controller
       )
     )
   end
+
+  def respond_page(content_path)
+    begin
+      content_html = @content.get_page(content_path)
+
+      @server.respond(
+        @render.render_page(
+          content_html,
+          @content.get_title_from_file(content_path),
+          @query
+        )
+      )
+    rescue MardownNotFoundException
+      @server.respond_404(@render.render_404())
+    end
+  end
 end

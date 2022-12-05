@@ -62,18 +62,5 @@ loop do
   end
 
   # Page
-  begin
-    content_html = content.get_page(content_path)
-  rescue MardownNotFoundException
-    server.respond_404(render.render_404())
-    next
-  end
-
-  server.respond(
-    render.render_page(
-      content_html,
-      content.get_title_from_file(content_path),
-      path
-    )
-  )
+  controller.set_query(path).respond_page(content_path)
 end
