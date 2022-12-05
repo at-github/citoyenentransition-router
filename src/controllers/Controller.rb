@@ -2,8 +2,8 @@ require_relative './exceptions/StaticNotFoundException'
 
 class Controller
 
-  def initialize(root, server, render, content)
-    @root    = root
+  def initialize(server, render, content)
+    @root    = File.dirname(File.expand_path(__FILE__)) + '/../..'
     @server  = server
     @render  = render
     @content = content
@@ -12,6 +12,33 @@ class Controller
   def set_query(path)
     @query = path
     self
+  end
+
+  def switch(path)
+    # Statics
+    if /^\/public.*$/.match?(path) == true
+      begin
+        set_query(path).respond_static
+        return
+      rescue StaticNotFoundException
+        return
+      end
+    end
+
+    # Home
+    if /^\/$/.match?(path) == true
+      set_query(path).respond_home
+      return
+    end
+
+    # Archive
+    if @content.slug_directory?(path)
+      set_query(path).respond_archive(path)
+      return
+    end
+
+    # Page
+    set_query(path).respond_page(path)
   end
 
   def respond_static
@@ -37,34 +64,29 @@ class Controller
     @server.respond(@render.render_home(content_html))
   end
 
-  def respond_archive(content_path)
+  def respond_archive(path)
     # Force "/" on directory
-    if (!/^.*\/$/.match?(content_path))
+    if (!/^.*\/$/.match?(path))
       @server.redirect("#{@query}/")
       return
     end
 
-    content_html = @content.get_list_titles_from_directory(
-      content_path,
-      @query
-    )
-
     @server.respond(
       @render.render_archive(
-        content_html,
+        @content.get_list_titles_from_directory(path),
         @query
       )
     )
   end
 
-  def respond_page(content_path)
+  def respond_page(path)
     begin
-      content_html = @content.get_page(content_path)
+      content_html = @content.get_page(path)
 
       @server.respond(
         @render.render_page(
           content_html,
-          @content.get_title_from_file(content_path),
+          @content.get_title_from_file(path),
           @query
         )
       )

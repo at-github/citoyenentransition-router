@@ -15,15 +15,24 @@ class Content
     @translation = translation
   end
 
+  def slug_directory?(path)
+    translated_slug = @translation.translate_slug(path)
+    File.directory?("#{@content_folder}#{translated_slug}")
+  end
+
   def get_static_content(path)
     File.open(path).read
   end
 
   def get_title_from_file(path)
-    path = "#{path}.md" if ! /.*\.md$/.match? path
+    translated_slug = @translation.translate_slug(path)
+
+    path = "#{@content_folder}#{translated_slug}.md" if ! /.*\.md$/.match? path
+
     if !File.exist?(path)
       raise MardownNotFoundException.new()
     end
+
     md_file = File.open(path)
     response = md_file.read
 
@@ -38,7 +47,8 @@ class Content
   end
 
   def get_page(path)
-    path = "#{path}.md"
+    translated_path = "#{@translation.translate_slug(path)}"
+    path = "#{@content_folder}#{translated_path}.md"
 
     if !File.exist?(path)
       raise MardownNotFoundException.new()
@@ -54,10 +64,12 @@ class Content
     markdown_content.render(response)
   end
 
-  def get_list_titles_from_directory(folder_path, slug)
+  def get_list_titles_from_directory(folder_path)
+    translated_folder_path = @translation.translate_slug(folder_path)
     content = ''
 
-    list_md = Dir["#{folder_path}/*.md"]
+    slug = @translation.untranslate_slug(translated_folder_path)
+    list_md = Dir["#{@content_folder}/#{translated_folder_path}/*.md"]
     list_md.each do |md|
       text = get_title_from_file(md)
       content += "<h3>
@@ -72,16 +84,17 @@ class Content
 
   def get_list_titles_from_directories()
     content_html = []
+
     root = Dir["#{@content_folder}/*"]
     root.each do |item|
+      next if !File.directory? item
+
       folder = item.split('/')[-1]
+      slug = "/#{folder}/"
       content_html << Hash[
         'name' => @translation.untranslate(folder),
-        'content' => get_list_titles_from_directory(
-          item,
-          @translation.untranslate(folder)
-        )
-      ] if File.directory? item
+        'content' => get_list_titles_from_directory(slug)
+      ]
     end
 
     content_html

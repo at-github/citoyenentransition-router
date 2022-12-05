@@ -30,37 +30,10 @@ translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
 @links = content.get_links()
 render = Render.new(pwd, @title, @links)
-controller = Controller.new(pwd, server, render, content)
+controller = Controller.new(server, render, content)
 
 STDOUT.puts 'Server started localhost:2345'
 loop do
   path = server.request()
-
-  # Statics
-  if /^\/public.*$/.match?(path) == true
-    begin
-      controller.set_query(path).respond_static
-      next
-    rescue StaticNotFoundException
-      next
-    end
-  end
-
-  # Home
-  if /^\/$/.match?(path) == true
-    controller.set_query(path).respond_home
-    next
-  end
-
-  # Translate slug if needed
-  content_path = "#{content_folder}#{translation.translate_slug(path)}"
-
-  # Archive
-  if File.directory?(content_path)
-    controller.set_query(path).respond_archive(content_path)
-    next
-  end
-
-  # Page
-  controller.set_query(path).respond_page(content_path)
+  controller.switch(path)
 end

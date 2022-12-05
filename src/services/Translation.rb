@@ -29,4 +29,20 @@ class Translation
 
     path.gsub(slug, slugTranslated)
   end
+
+  def untranslate_slug(path)
+    # page
+    result = /^\/([a-z]+)\/.*$/.match(path)
+    # folder
+    result = /^\/([a-z]+)$/.match(path) if !result
+
+    return path if !result
+
+    slug, = result.captures
+    slugTranslated = @translations[slug]
+
+    return path if !slugTranslated
+
+    path.gsub(slug, slugTranslated)
+  end
 end
