@@ -36,4 +36,24 @@ class Controller
     content_html = @content.get_list_titles_from_directories()
     @server.respond(@render.render_home(content_html))
   end
+
+  def respond_archive(content_path)
+    # Force "/" on directory
+    if (!/^.*\/$/.match?(content_path))
+      @server.redirect("#{@query}/")
+      return
+    end
+
+    content_html = @content.get_list_titles_from_directory(
+      content_path,
+      @query
+    )
+
+    @server.respond(
+      @render.render_archive(
+        content_html,
+        @query
+      )
+    )
+  end
 end

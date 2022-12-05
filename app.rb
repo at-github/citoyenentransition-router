@@ -57,23 +57,7 @@ loop do
 
   # Archive
   if File.directory?(content_path)
-    # Force "/" on directory
-    if (!/^.*\/$/.match?(content_path))
-      server.redirect("#{path}/")
-      next
-    end
-
-    content_html = content.get_list_titles_from_directory(
-      content_path,
-      path
-    )
-
-    server.respond(
-      render.render_archive(
-        content_html,
-        path
-      )
-    )
+    controller.set_query(path).respond_archive(content_path)
     next
   end
 
