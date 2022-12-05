@@ -16,7 +16,7 @@ abort 'You must create a "config.yml" file' if !File.exist? "#{pwd}/config.yml"
 config = YAML.load_file("#{pwd}/config.yml")
 abort 'You must create a "title" key in config.yml file,'\
   ' with a correct path' if !config.key? "title"
-@title = config['title']
+title = config['title']
 
 abort 'You must create a "content_folder" key in config.yml file,'\
   ' with a correct path' if !config.key? "content_folder"
@@ -28,8 +28,7 @@ abort 'Wrong path for content_folder key'\
 server = Server.new
 translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
-@links = content.get_links()
-render = Render.new(pwd, @title, @links)
+render = Render.new(pwd, title, content.get_links())
 dispatcher = Dispatcher.new(
   server,
   render,
