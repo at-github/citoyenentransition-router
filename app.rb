@@ -35,7 +35,7 @@ loop do
   path = myServer.request()
 
   # Statics
-  if (path.match? 'favicon.ico') || (/^\/public.*$/.match?(path) == true)
+  if /^\/public.*$/.match?(path) == true
     full_path = "#{pwd}#{path}"
     if !File.exist?(full_path)
       myServer.respond_404(render.render_404())
