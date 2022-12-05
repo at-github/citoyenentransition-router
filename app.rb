@@ -85,10 +85,8 @@ loop do
   end
 
   # Page
-  markdown_path = "#{content_path}.md"
-
   begin
-    content_html = content.get_page(markdown_path)
+    content_html = content.get_page(content_path)
   rescue MardownNotFoundException
     myServer.respond_404(render.render_404())
     next
@@ -97,7 +95,7 @@ loop do
   myServer.respond(
     render.render_page(
       content_html,
-      content.get_title(markdown_path),
+      content.get_title_from_file(content_path),
       path
     )
   )

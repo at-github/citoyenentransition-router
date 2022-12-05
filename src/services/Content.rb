@@ -15,9 +15,11 @@ class Content
     @translation = translation
   end
 
-  def get_title(path)
+  def get_title_from_file(path)
+    path = "#{path}.md" if ! /.*\.md$/.match? path
     md_file = File.open(path)
     response = md_file.read
+
     @markdownSimpleTitle.render(response)
   end
 
@@ -29,6 +31,8 @@ class Content
   end
 
   def get_page(path)
+    path = "#{path}.md"
+
     if !File.exist?(path)
       raise MardownNotFoundException.new('foo')
     end
@@ -48,10 +52,7 @@ class Content
 
     list_md = Dir["#{folder_path}/*.md"]
     list_md.each do |md|
-      md_file  = File.open(md)
-      response = md_file.read
-
-      text = @markdownSimpleTitle.render(response)
+      text = get_title_from_file(md)
       content += "<h3>
         <a href=\"#{slug}#{text.gsub(' ', '-').downcase}\">
           #{text}
