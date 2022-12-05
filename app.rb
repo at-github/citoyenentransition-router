@@ -6,6 +6,7 @@ require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
 require_relative 'src/render/template/Render'
 require_relative 'src/services/Content'
+require_relative 'src/controllers/Controller'
 
 # Checks
 pwd  = File.dirname(File.expand_path(__FILE__))
@@ -29,6 +30,7 @@ translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
 @links = content.get_links()
 render = Render.new(pwd, @title, @links)
+controller = Controller.new(pwd, myServer, render)
 
 STDOUT.puts 'Server started localhost:2345'
 loop do
@@ -36,20 +38,12 @@ loop do
 
   # Statics
   if /^\/public.*$/.match?(path) == true
-    full_path = "#{pwd}#{path}"
-    if !File.exist?(full_path)
-      myServer.respond_404(render.render_404())
+    begin
+      controller.set_query(path).respond_static
+      next
+    rescue StaticNotFoundException
       next
     end
-
-    content_type = 'text/html'
-    content_type = 'text/css' if /^\/public\/css.*$/.match?(path)
-    content_type = 'application/javascript' if /^\/public\/js.*$/.match?(path)
-
-    file = File.open(full_path)
-    file_data = file.read
-    myServer.respond(file_data, 200, content_type)
-    next
   end
 
   # Home
