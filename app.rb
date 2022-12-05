@@ -2,11 +2,11 @@ require 'bundler/setup'
 require 'erb'
 require 'yaml'
 
+require_relative 'src/controllers/Controller'
+require_relative 'src/renders/template/Render'
+require_relative 'src/services/Content'
 require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
-require_relative 'src/render/template/Render'
-require_relative 'src/services/Content'
-require_relative 'src/controllers/Controller'
 
 # Checks
 pwd  = File.dirname(File.expand_path(__FILE__))

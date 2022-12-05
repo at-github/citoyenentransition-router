@@ -1,5 +1,5 @@
 require 'redcarpet'
-require_relative '../render/markdown/RenderSimpleTitle'
+require_relative '../renders/markdown/RenderSimpleTitle'
 require_relative './exceptions/MardownNotFoundException'
 
 class Content
