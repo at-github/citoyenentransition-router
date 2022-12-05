@@ -39,7 +39,7 @@ class Dispatcher
         @render,
         @content
       )
-      homeController.set_query(path).respond(path)
+      homeController.set_query(path).respond
       return
     end
 
@@ -50,7 +50,7 @@ class Dispatcher
         @render,
         @content
       )
-      archiveController.set_query(path).respond(path)
+      archiveController.set_query(path).respond
       return
     end
 
@@ -60,6 +60,6 @@ class Dispatcher
       @render,
       @content
     )
-    pageController.set_query(path).respond(path)
+    pageController.set_query(path).respond
   end
 end

@@ -13,16 +13,16 @@ class ArchiveController
     self
   end
 
-  def respond(path)
+  def respond
     # Force "/" on directory
-    if (!/^.*\/$/.match?(path))
+    if (!/^.*\/$/.match?(@query))
       @server.redirect("#{@query}/")
       return
     end
 
     @server.respond(
       @render.render_archive(
-        @content.get_list_titles_from_directory(path),
+        @content.get_list_titles_from_directory(@query),
         @query
       )
     )

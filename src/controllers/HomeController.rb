@@ -13,7 +13,7 @@ class HomeController
     self
   end
 
-  def respond(path)
+  def respond
     content_html = @content.get_list_titles_from_directories()
     @server.respond(@render.render_home(content_html))
   end

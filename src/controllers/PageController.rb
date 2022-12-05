@@ -13,14 +13,14 @@ class PageController
     self
   end
 
-  def respond(path)
+  def respond
     begin
-      content_html = @content.get_page(path)
+      content_html = @content.get_page(@query)
 
       @server.respond(
         @render.render_page(
           content_html,
-          @content.get_title_from_file(path),
+          @content.get_title_from_file(@query),
           @query
         )
       )
