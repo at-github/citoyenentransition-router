@@ -4,7 +4,7 @@ class Translation
   end
 
   def translate(term)
-    translated = @translations.key(term)
+    translated = @translations.key term
 
     return term if !translated
     translated
@@ -16,25 +16,25 @@ class Translation
 
   def translate_slug(path)
     # page
-    result = /^\/([a-z]+)\/.*$/.match(path)
+    result = /^\/([a-z]+)\/.*$/.match path
     # folder
-    result = /^\/([a-z]+)$/.match(path) if !result
+    result = /^\/([a-z]+)$/.match path if !result
 
     return path if !result
 
     slug, = result.captures
-    slugTranslated = @translations.key(slug)
+    slugTranslated = @translations.key slug
 
     return path if !slugTranslated
 
-    path.gsub(slug, slugTranslated)
+    path.gsub slug, slugTranslated
   end
 
   def untranslate_slug(path)
     # page
-    result = /^\/([a-z]+)\/.*$/.match(path)
+    result = /^\/([a-z]+)\/.*$/.match path
     # folder
-    result = /^\/([a-z]+)$/.match(path) if !result
+    result = /^\/([a-z]+)$/.match path if !result
 
     return path if !result
 
@@ -43,6 +43,6 @@ class Translation
 
     return path if !slugTranslated
 
-    path.gsub(slug, slugTranslated)
+    path.gsub slug, slugTranslated
   end
 end
