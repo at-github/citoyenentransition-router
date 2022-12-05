@@ -11,13 +11,13 @@ class Content
       ),
       extensions = {}
     )
-    @markdownSimpleTitle = Redcarpet::Markdown.new(RenderSimpleTitle.new())
+    @markdownSimpleTitle = Redcarpet::Markdown.new RenderSimpleTitle.new
     @translation = translation
   end
 
   def slug_directory?(path)
-    translated_slug = @translation.translate_slug(path)
-    File.directory?("#{@content_folder}#{translated_slug}")
+    translated_slug = @translation.translate_slug path
+    File.directory? "#{@content_folder}#{translated_slug}"
   end
 
   def get_static_content(path)
@@ -25,53 +25,53 @@ class Content
   end
 
   def get_title_from_file(path)
-    translated_slug = @translation.translate_slug(path)
+    translated_slug = @translation.translate_slug path
 
     path = "#{@content_folder}#{translated_slug}.md" if ! /.*\.md$/.match? path
 
-    if !File.exist?(path)
-      raise MardownNotFoundException.new()
+    if !File.exist? path
+      raise MardownNotFoundException.new
     end
 
-    md_file = File.open(path)
+    md_file = File.open path
     response = md_file.read
 
-    @markdownSimpleTitle.render(response)
+    @markdownSimpleTitle.render response
   end
 
   def get_links()
     links_md_path = @content_folder + '/links.md'
-    links_md_file = File.open(links_md_path)
+    links_md_file = File.open links_md_path
     links_content = links_md_file.read
-    @markdown_links.render(links_content)
+    @markdown_links.render links_content
   end
 
   def get_page(path)
-    translated_path = "#{@translation.translate_slug(path)}"
+    translated_path = "#{@translation.translate_slug path}"
     path = "#{@content_folder}#{translated_path}.md"
 
     if !File.exist?(path)
-      raise MardownNotFoundException.new()
+      raise MardownNotFoundException.new
     end
 
-    md_file = File.open(path)
+    md_file = File.open path
     response = md_file.read
 
     markdown_content = Redcarpet::Markdown.new(
       Redcarpet::Render::HTML.new(hard_wrap: true),
       extensions = {tables: true}
     )
-    markdown_content.render(response)
+    markdown_content.render response
   end
 
   def get_list_titles_from_directory(folder_path)
-    translated_folder_path = @translation.translate_slug(folder_path)
+    translated_folder_path = @translation.translate_slug folder_path
     content = ''
 
-    slug = @translation.untranslate_slug(translated_folder_path)
+    slug = @translation.untranslate_slug translated_folder_path
     list_md = Dir["#{@content_folder}/#{translated_folder_path}/*.md"]
     list_md.each do |md|
-      text = get_title_from_file(md)
+      text = get_title_from_file md
       content += "<h3>
         <a href=\"#{slug}#{text.gsub(' ', '-').downcase}\">
           #{text}
