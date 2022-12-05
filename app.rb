@@ -2,8 +2,8 @@ require 'bundler/setup'
 require 'erb'
 require 'yaml'
 
-require_relative 'src/controllers/Controller'
 require_relative 'src/renders/template/Render'
+require_relative 'src/services/Dispatcher'
 require_relative 'src/services/Content'
 require_relative 'src/services/Server'
 require_relative 'src/services/Translation'
@@ -30,10 +30,14 @@ translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
 @links = content.get_links()
 render = Render.new(pwd, @title, @links)
-controller = Controller.new(server, render, content)
+dispatcher = Dispatcher.new(
+  server,
+  render,
+  content
+)
 
 STDOUT.puts 'Server started localhost:2345'
 loop do
   path = server.request()
-  controller.switch(path)
+  dispatcher.dispatch(path)
 end
