@@ -15,6 +15,10 @@ class Content
     @translation = translation
   end
 
+  def get_static_content(path)
+    File.open(path).read
+  end
+
   def get_title_from_file(path)
     path = "#{path}.md" if ! /.*\.md$/.match? path
     md_file = File.open(path)
@@ -34,7 +38,7 @@ class Content
     path = "#{path}.md"
 
     if !File.exist?(path)
-      raise MardownNotFoundException.new('foo')
+      raise MardownNotFoundException.new()
     end
 
     md_file = File.open(path)

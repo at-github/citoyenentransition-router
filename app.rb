@@ -30,7 +30,7 @@ translation = Translation.new(config['translations'])
 content = Content.new(content_folder, translation)
 @links = content.get_links()
 render = Render.new(pwd, @title, @links)
-controller = Controller.new(pwd, server, render)
+controller = Controller.new(pwd, server, render, content)
 
 STDOUT.puts 'Server started localhost:2345'
 loop do
@@ -48,8 +48,7 @@ loop do
 
   # Home
   if /^\/$/.match?(path) == true
-    content_html = content.get_list_titles_from_directories()
-    server.respond(render.render_home(content_html))
+    controller.set_query(path).respond_home
     next
   end
 
