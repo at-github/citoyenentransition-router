@@ -1,16 +1,12 @@
+require_relative './Controller'
 require_relative './exceptions/StaticNotFoundException'
 
-class HomeController
+class HomeController < Controller
 
   def initialize(server, render, content)
     @server  = server
     @render  = render
     @content = content
-  end
-
-  def set_query(path)
-    @query = path
-    self
   end
 
   def respond

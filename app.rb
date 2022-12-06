@@ -27,9 +27,9 @@ abort 'Wrong path for content_folder key'\
 
 server = Server.new
 translation = Translation.new config['translations']
-content = Content.new content_folder, translation
-render = Render.new pwd, title, content.get_links
-dispatcher = Dispatcher.new server, render, content
+content     = Content.new content_folder, translation
+render      = Render.new pwd, title, content.get_links
+dispatcher  = Dispatcher.new server, render, content
 
 STDOUT.puts 'Server started localhost:2345'
 loop do

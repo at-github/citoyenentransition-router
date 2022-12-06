@@ -1,17 +1,13 @@
+require_relative './Controller'
 require_relative './exceptions/StaticNotFoundException'
 
-class StaticController
+class StaticController < Controller
 
   def initialize(server, render, content)
     @root    = File.dirname(File.expand_path(__FILE__)) + '/../..'
     @server  = server
     @render  = render
     @content = content
-  end
-
-  def set_query(path)
-    @query = path
-    self
   end
 
   def respond
