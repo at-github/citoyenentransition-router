@@ -62,6 +62,9 @@ Le contenu *markdown* est à télécharger voire cloner dans le dossier `content
 2. sur `/articles` l'application affichera le résumé de dossier `post` puisqu'elle a trouvé une traduction dans la configuration (voir plus haut)
 3. sur `/no_translation` l'application affichera le résumé de dossier `no_translation`
 
+/!\ Le nom du fichier doit être le même que son h1,
+les 2 sans accents pour l’instant.
+
 ### Installer
 ```
 bundle install
