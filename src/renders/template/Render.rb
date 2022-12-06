@@ -1,7 +1,8 @@
 class Render
-  def initialize(root, title, links)
+  def initialize(root, title, links, footer)
     @title = title.capitalize
     @links = links
+    @github, @twitter = footer.values_at('github', 'twitter')
 
     @layout_template    = ERB.new File.read "#{root}/src/templates/layout.erb"
     @home_template      = ERB.new File.read "#{root}/src/templates/home.erb"
@@ -16,7 +17,9 @@ class Render
     @layout_template.result_with_hash(
       content: content,
       title: final_title,
-      links: @links
+      links: @links,
+      github: @github,
+      twitter: @twitter
     )
   end
 

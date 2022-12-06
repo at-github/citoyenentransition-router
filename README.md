@@ -17,9 +17,11 @@ où l'application va chercher le contenu *markdown*.
 - `title` : Qui sera en tant que *title* et *h1* de l'application
 
 ##### Facultatif
+
+###### Traductions
 La clé `translations` permet de fournir une traduction des sous-dossiers de votre dossier de contenus,
 exemple :
-```
+```yaml
 translations:
   posts: articles
 ```
@@ -36,6 +38,19 @@ vous aurez les urls suivantes
 - `/articles/premier-article`
 - `/no_translation/second-post`
 (le dernier slug est déterminé d'après le premier `h1` trouver dans le markdown)
+
+###### Liens dans le footer
+2 liens sont disponibles, un lien github et twitter.
+Voici un exemple dans la configuration :
+```yaml
+footer:
+  github:
+    url: https://github.com/at-github/citoyenentransition-router
+    title: Contribuez, retrouvez le code source sur github
+  twitter:
+    url: https://twitter.com/_en_transition_
+    title: Retrouvons nous aussi sur twitter
+```
 
 #### Contenu
 

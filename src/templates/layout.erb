@@ -2,7 +2,7 @@
 <html lang="fr-FR">
   <head>
     <title><%= title %></title>
-    <link rel="shortcut icon" type="image/jpg" href="/public/citoyenentransition-logo.png"/>
+    <link rel="shortcut icon" type="image/jpg" href="/public/img/citoyenentransition-logo.png"/>
     <link rel="stylesheet" href="/public/css/style.css" media="all" />
     <script src="/public/js/app.js" type="module"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -17,5 +17,30 @@
       <%= content %>
       <aside id="links"><%= links %></aside>
     </div>
+    <footer>
+      <ul>
+        <li class="ruby" title="Fait avec ruby"></li>
+        <% if github %>
+        <li class="github">
+          <a
+            href="<%= github['url'] %>"
+            title="<%= github['title'] %>"
+            target="_blank">
+            github
+          </a>
+        </li>
+        <% end %>
+        <% if twitter %>
+        <li class="twitter">
+          <a
+            href="<%= twitter['url'] %>"
+            title="<%= twitter['title'] %>"
+            target="_blank">
+            twitter
+          </a>
+        </li>
+        <% end %>
+      </ul>
+    </footer>
   </body>
 </html>

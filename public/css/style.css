@@ -114,6 +114,44 @@ img {
   font-size: 15px;
 }
 
+footer ul {
+  display: flex;
+  justify-content: space-around;
+  list-style-type: none;
+  padding: 0;
+}
+
+footer li {
+  width:  30px;
+  height: 30px;
+}
+
+footer li a {
+  display: block;
+  width:  30px;
+  height: 30px;
+  background-size: cover;
+  text-indent: -5000px;
+  border: none;
+}
+
+footer li a:hover {
+  border: none;
+}
+
+footer .ruby {
+  background-image: url('/public/img/ruby.png');
+  background-size: cover;
+}
+
+footer .github a {
+  background-image: url('/public/img/github.png');
+}
+
+footer .twitter a {
+  background-image: url('/public/img/twitter.png');
+}
+
 @media (max-width: 901px) {
   .container {
     display: block;

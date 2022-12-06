@@ -18,6 +18,7 @@ class StaticController < Controller
     content_type = 'text/html'
     content_type = 'text/css' if /^\/public\/css.*$/.match? @query
     content_type = 'application/javascript' if /^\/public\/js.*$/.match? @query
+    content_type = 'image/png' if /^\/public\/img\/.*\.png$/.match? @query
 
     @server.respond(
       @content.get_static_content(full_path),
