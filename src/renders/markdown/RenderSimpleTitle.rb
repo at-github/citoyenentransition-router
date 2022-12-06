@@ -1,6 +1,8 @@
 class RenderSimpleTitle < Redcarpet::Render::Base
-  def header(text, _)
-    return text
+  @cache = nil
+
+  def header(text, level)
+    return text if level == 1
   end
 
   def paragraph(text)
