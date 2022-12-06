@@ -25,13 +25,15 @@ content_folder = "#{pwd}/content/#{config['content_folder']}"
 abort 'Wrong path for content_folder key'\
   ' in config.yml file' if !File.directory? content_folder
 
-server = Server.new
+port = config.key?('port') ? config['port'] : 4000
+
+server = Server.new port
 translation = Translation.new config['translations']
 content     = Content.new content_folder, translation
 render      = Render.new pwd, title, content.get_links
 dispatcher  = Dispatcher.new server, render, content
 
-STDOUT.puts 'Server started localhost:2345'
+STDOUT.puts "Server started localhost:#{port}"
 loop do
   path = server.request
   dispatcher.dispatch path

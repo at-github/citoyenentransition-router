@@ -1,7 +1,7 @@
 require 'net/http'
 
 class Server
-  def initialize(port = 2345)
+  def initialize(port)
     @server = TCPServer.new('localhost', port)
   end
 

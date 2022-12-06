@@ -6,6 +6,47 @@ celui-ci est aussi une occasion pour jouer avec `ruby`.
 
 ## How to
 
+### Configurer
+
+#### Application
+Le fichier `config.yml` doit être créer à la racine du projet.
+Parmis les clés indispensables, il y a :
+- `port` : qui détermine sur quel port est lancé l'application
+- `cotent_folder` : qui est le chemin à partir du dossier `content` du projet,
+où l'application va chercher le contenu *markdown*.
+- `title` : Qui sera en tant que *title* et *h1* de l'application
+
+##### Facultatif
+La clé `translations` permet de fournir une traduction des sous-dossiers de votre dossier de contenus,
+exemple :
+```
+translations:
+  posts: articles
+```
+Si vous avez cette arborescence :
+```
+* content/
+\_ * mon_contenu/
+   \_ * posts/
+      \_ premier_article.md
+   \_ * no_translation/
+      \_ second_post.md
+```
+vous aurez les urls suivantes
+- `/articles/premier-article`
+- `/no_translation/second-post`
+(le dernier slug est déterminé d'après le premier `h1` trouver dans le markdown)
+
+#### Contenu
+
+Le contenu *markdown* est à télécharger voire cloner dans le dossier `content`
+(inclut dans `.gitignore`).
+
+0. sur toutes les pages, le contenu du fichiers `links.md` est affiché en colonne
+1. sur `/` l'application affichera le résumé de tous les dossiers
+2. sur `/articles` l'application affichera le résumé de dossier `post` puisqu'elle a trouvé une traduction dans la configuration (voir plus haut)
+3. sur `/no_translation` l'application affichera le résumé de dossier `no_translation`
+
 ### Installer
 ```
 bundle install
@@ -16,7 +57,8 @@ bundle install
 ```shell
 bundle exec daemon.rb start
 ```
-Par défaut pour l'instant le serveur démarre sur le port `2345` qui est écrit en *dur*, TODO mettre ce port en variable d'environnement.
+Par défaut le serveur démarre sur le port `4000`,
+il est modifiable dans le fichier de configuration `config.yml`.
 
 ## Notes techniques d'apprentissage
 
