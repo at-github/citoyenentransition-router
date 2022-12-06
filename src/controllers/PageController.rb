@@ -4,9 +4,7 @@ require_relative './exceptions/StaticNotFoundException'
 class PageController < Controller
 
   def initialize(server, render, content)
-    @server  = server
-    @render  = render
-    @content = content
+    super server, render, content
   end
 
   def respond
