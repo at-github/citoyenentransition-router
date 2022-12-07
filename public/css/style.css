@@ -152,6 +152,15 @@ footer .twitter a {
   background-image: url('/public/img/twitter.png');
 }
 
+footer p {
+  text-align: center;
+  font-size: 12px;
+}
+
+footer p a {
+  border: none;
+}
+
 @media (max-width: 901px) {
   .container {
     display: block;
