@@ -87,7 +87,7 @@ class Content
 
     root = Dir["#{@content_folder}/*"]
     root.each do |item|
-      next if !File.directory? item
+      next if !File.directory? item or /^.*img$/.match? item
 
       folder = item.split('/')[-1]
       slug = "/#{folder}/"
